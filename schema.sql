@@ -229,3 +229,23 @@ INSERT INTO booking_seats (
     show_seat_id, booking_id, status, hold_expires_at, price_paid
 )
 VALUES (1, 1001, 'held', CURRENT_TIMESTAMP(6) + INTERVAL 12 MINUTE, NULL);
+
+INSERT INTO payments (
+    payment_id, booking_id, provider, provider_payment_id,
+    amount, currency, status
+)
+VALUES (
+    5001, 1001, 'demo_gateway', 'demo_payment_5001',
+    250.00, 'INR', 'pending'
+);
+
+INSERT INTO payment_webhook_events (
+    webhook_event_id, provider, provider_event_id, payment_id,
+    event_type, payload, processing_status
+)
+VALUES (
+    1, 'demo_gateway', 'evt_demo_received_5001', 5001,
+    'payment.pending',
+    JSON_OBJECT('id', 'evt_demo_received_5001', 'type', 'payment.pending'),
+    'received'
+);
