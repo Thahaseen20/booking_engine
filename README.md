@@ -26,6 +26,26 @@ The complete, executable DDL and sample inserts are in [`schema.sql`](./schema.s
 mysql -u your_user -p < schema.sql
 ```
 
+### Example rows
+
+The schema script seeds these linked sample records; the IDs are fixed in the sample inserts so the foreign-key relationships can be followed:
+
+| Table | Example row |
+|---|---|
+| `customers` | `(1, 'Aarav Mehta', 'aarav@example.com')` |
+| `theatres` | `(1, 'Central Cinema', 'Bengaluru', 'Asia/Kolkata')` |
+| `screens` | `(1, 1, 'Screen 1')` |
+| `seats` | `(1, 1, 'A', 1, 'standard')` |
+| `movies` | `(1, 'The Last Orbit', 128, 'English', 'UA')` |
+| `shows` | `(1, 1, 1, '2026-10-16 18:30:00', 'scheduled')` |
+| `bookings` | `(1001, 1, 1, 'held')` |
+| `show_seats` | `(1, 1, 1, 'active', 250.00)` |
+| `booking_seats` | `(1, 1001, 'held', [12-minute expiry])` |
+| `payments` | `(5001, 1001, 'demo_gateway', 'demo_payment_5001', 250.00, 'INR', 'pending')` |
+| `payment_webhook_events` | `(1, 'demo_gateway', 'evt_demo_received_5001', 5001, 'payment.pending', 'received')` |
+
+The full column values and timestamp defaults are specified by the `INSERT` statements in [`schema.sql`](./schema.sql).
+
 The schema is normalized: seat coordinates are stored once per screen, movie and theatre details are not repeated in show rows, and booking/payment/webhook facts have separate relations. Each column is atomic (1NF); non-key attributes depend on the whole key (2NF); transitive dependencies are kept in their entity tables (3NF). Each non-trivial functional dependency in a base table is determined by a candidate key (BCNF). In particular, seat claims reference a surrogate `show_seat_id` rather than repeating `show_id` alongside `booking_id`. The theatre-to-screen-to-seat and movie-to-show relationships are represented by foreign keys rather than copied descriptive fields.
 
 ## Concurrency and hold strategy
